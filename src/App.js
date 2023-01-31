@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import TaskList from './components/TaskList.js';
 import './App.css';
 
@@ -16,6 +16,19 @@ const TASKS = [
 ];
 
 const App = () => {
+  const [tasks, setTask] = useState(TASKS);
+
+  const removetaskonclick = (id)=>{
+    const updatedtasks = [];
+    for (let task of tasks){
+      if (task.id !== id){
+        updatedtasks.push(task)
+      }
+    }
+    setTask(updatedtasks);
+    
+  }
+
   return (
     <div className="App">
       <header className="App-header">
@@ -23,7 +36,7 @@ const App = () => {
       </header>
       <main>
         <div>
-          <TaskList tasks={TASKS} />
+          <TaskList tasks={tasks} onUpdateTask={removetaskonclick}/>
         </div>
       </main>
     </div>
