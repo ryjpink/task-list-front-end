@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TaskList from './components/TaskList.js';
+import axios from 'axios';
 import './App.css';
 
 const TASKS = [
@@ -16,7 +17,22 @@ const TASKS = [
 ];
 
 const App = () => {
-  const [tasks, setTask] = useState(TASKS);
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(()=>{
+    axios.get("https://task-list-api-c17.herokuapp.com/tasks")
+      .then((response)=>{
+        let tasks = response.data.map(task => {
+          return {
+            id: task.id,
+            title: task.title,
+            isComplete: task.is_complete,
+          };
+        });
+        setTasks(tasks);
+      })
+      .catch((error)=>{console.log("got error")})
+  }, []);
 
   const removetaskonclick = (id)=>{
     const updatedtasks = [];
@@ -25,9 +41,20 @@ const App = () => {
         updatedtasks.push(task)
       }
     }
-    setTask(updatedtasks);
-    
+    setTasks(updatedtasks);  
   }
+
+  const updatetaskonclick = (updatedtask)=>{
+    const updatedtasks = tasks.map(task =>{
+      if (task.id === updatedtask.id){
+        return updatedtask;
+      }else{
+        return task;
+      }
+    });
+    setTasks(updatedtasks);
+  }
+
 
   return (
     <div className="App">
@@ -36,7 +63,7 @@ const App = () => {
       </header>
       <main>
         <div>
-          <TaskList tasks={tasks} onUpdateTask={removetaskonclick}/>
+          <TaskList tasks={tasks} onUpdateTask={updatetaskonclick} removeTask={removetaskonclick}/>
         </div>
       </main>
     </div>
